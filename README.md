@@ -10,6 +10,6 @@ This repository documents my journey of learning Machine Learning step by step u
 
 ## Goal
 
-* Build real ML projects
-* Understand core concepts
-* Prepare for AI-related jobs
+* Build practical ML projects
+* Understand core concepts through implementation
+* Develop real-world machine learning skills
