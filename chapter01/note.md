@@ -20,3 +20,7 @@ x="GDP per capita(USD)" 表示横轴是人均GDP数据
 y="Life satisfaction" 表示纵轴是生活满意度数据
 grid=True 显示网格线
 ```
+
+---
+## 输出结果
+![alt text](image/image.png)

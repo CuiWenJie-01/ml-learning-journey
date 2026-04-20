@@ -6,11 +6,18 @@ from sklearn.linear_model import LinearRegression # LinearRegression：线性回
 # 数据集
 data_root="https://raw.githubusercontent.com/ageron/data/main/"
 lifesat=pd.read_csv(data_root+"lifesat/lifesat.csv")
-x=lifesat[["GDP per capita(USD)"]].values # GDP per capita：人均GDP
+
+# 查看数据集的列名
+print("数据集的列名:")
+print(lifesat.columns.tolist())
+print("\n数据集的前几行:")
+print(lifesat.head())
+
+x=lifesat[["GDP per capita (USD)"]].values # GDP per capita：人均GDP
 y=lifesat[["Life satisfaction"]].values # Life satisfaction：生活满意度
 
 # 绘制散点图，展示人均GDP与生活满意度之间的关系
-lifesat.plot(kind='scatter',grid=True,x="GDP per capita(USD)",y="Life satisfaction")
+lifesat.plot(kind='scatter',grid=True,x="GDP per capita (USD)",y="Life satisfaction")
 # 设置坐标轴范围：X轴从23500到62500（人均GDP），Y轴从4到9（生活满意度）
 plt.axis([23_500,62_500,4,9])
 # 显示绘制的图形
