@@ -6,3 +6,17 @@
 
 4. LinearRegression from sklearn.linear_model：这是scikit-learn机器学习库中的线性回归模型，用于建立线性关系模型进行预测和分析。
 
+---
+
+```
+lifesat.plot(kind='scatter',grid=True,x="GDP per capita(USD)",y="Life satisfaction")
+plt.axis([23_500,62_500,4,9])
+plt.show()
+
+这一行使用pandas的plot方法创建了一个散点图(scatter plot)，其中：
+
+kind='scatter' 指定图表类型为散点图
+x="GDP per capita(USD)" 表示横轴是人均GDP数据
+y="Life satisfaction" 表示纵轴是生活满意度数据
+grid=True 显示网格线
+```
