@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt # plt：绘图库
 import numpy as np # np：科学计算库
 import pandas as pd # pd：数据分析库
 from sklearn.linear_model import LinearRegression # LinearRegression：线性回归模型
+#from sklearn.neighbors import KNeighborsRegressor # KNeighborsRegressor：K近邻回归模型
 
 # 数据集
 data_root="https://raw.githubusercontent.com/ageron/data/main/"
@@ -24,6 +25,7 @@ plt.axis([23_500,62_500,4,9])
 plt.show()
 
 model=LinearRegression() # 创建线性回归模型对象
+#model=KNeighborsRegressor(n_neighbors=3) # 创建K近邻回归模型对象
 model.fit(x,y) # 使用数据集中的人均GDP和生活满意度进行模型训练
 
 x_new=[[33_442.8]] # 新的人均GDP数据点
