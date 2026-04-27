@@ -85,3 +85,234 @@ max     -114.310000     41.950000  ...      15.000100       500001.000000
 3.  **属性组合**：例如，“房间总数”本身意义不大，你可以创建新特征，如 `rooms_per_household`（人均房间数），这类特征通常与房价相关性更高。
 
 这些直方图反映了真实世界数据的“不完美”，而这些不完美正是特征工程需要解决的核心问题。
+
+---
+
+# 分层抽样
+运行stratified_sampling.py返回的结果：
+```
+             Overall  Stratified
+income_cat
+1           0.039826    0.039971
+2           0.318847    0.318798
+3           0.350581    0.350533
+4           0.176308    0.176357
+5           0.114438    0.114341
+```
+> 分层抽样理解：分层抽样后，测试集中各收入分组的比例与整体数据几乎一致，说明抽样过程成功保持了数据分布的一致性，从而保证了模型评估的可靠性。
+
+# 数据可视化
+![alt text](image/data_visualization.png)
+> 数据可视化理解：从这张图可以比较清晰地看出房价和人口密度以及地理位置有着密切的关系。
+
+# 相关性
+运行correlation.py返回的结果：
+```
+median_house_value    1.000000
+median_income         0.688075
+total_rooms           0.134153
+housing_median_age    0.105623
+households            0.065843
+total_bedrooms        0.049686
+population           -0.024650
+longitude            -0.045967
+latitude             -0.144160
+Name: median_house_value, dtype: float64
+```
+> 相关性理解：
+```
+✔ 正相关（> 0）
+median_income ↑ → 房价 ↑
+✔ 负相关（< 0）
+latitude ↑ → 房价 ↓（北部更便宜）
+✔ 接近 0
+基本没线性关系
+```
+相关系数在-1到1之间。当它接近1时，表示正相关关系很强。例如，房屋价值会随着收入的增加而上升；当系数接近-1时，说明存在很强的负相关关系。<br/>
+重要：通过计算 Pearson correlation matrix，可以快速识别与目标变量最线性相关的特征，为后续特征选择和模型构建提供依据。
+
+
+# 组合特征
+运行combine_feature.py返回的结果：
+```
+median_house_value          1.000000
+median_income               0.688355
+rooms_per_household         0.151344
+total_rooms                 0.133294
+housing_median_age          0.106432
+households                  0.064894
+total_bedrooms              0.049686
+population_per_household   -0.023639
+population                 -0.025300
+longitude                  -0.045398
+latitude                   -0.144638
+bedrooms_per_room          -0.255880
+Name: median_house_value, dtype: float64
+```
+> 组合特征理解：通过构造比率类特征（如 rooms_per_household），可以将原始特征转换为更具语义的信息表达，从而提升模型对数据结构的理解能力。
+
+# 📌 三个组合特征的意义
+
+---
+
+## ① rooms_per_household
+
+$$
+rooms\_per\_household = \frac{total\_rooms}{households}
+$$
+
+👉 平均每户房间数
+
+✔ 反映“房屋规模”
+
+---
+
+## ② bedrooms_per_room
+
+$$
+bedrooms\_per\_room = \frac{total\_bedrooms}{total\_rooms}
+$$
+
+👉 卧室占比
+
+✔ 反映“房子结构（紧凑 or 豪华）”
+
+---
+
+## ③ population_per_household
+
+$$
+population\_per\_household = \frac{population}{households}
+$$
+
+👉 每户平均人口
+
+✔ 反映“居住密度”
+
+---
+
+# 🔥 为什么要做组合特征？
+
+这是机器学习里的一个核心思想：
+
+> ❗ 原始特征 ≠ 最优表达
+
+---
+
+## 📊 举个直觉例子
+
+| 原始特征 | 问题 |
+|----------|------|
+| total_rooms | 不知道“房子大小” |
+| households | 不知道“每户情况” |
+
+---
+
+## ✨ 组合后的优势
+
+- 更“语义化”的表达
+- 信息更密集
+- 更容易被模型学习
+- 往往能提升效果
+
+# 数据清洗
+运行data_cleaning.py返回的结果：
+```
+longitude               0
+latitude                0
+housing_median_age      0
+total_rooms             0
+total_bedrooms        207
+population              0
+households              0
+median_income           0
+median_house_value      0
+ocean_proximity         0
+dtype: int64
+各特征中位数：
+[-1.1849e+02  3.4260e+01  2.9000e+01  2.1270e+03  4.3500e+02  1.1660e+03
+  4.0900e+02  3.5348e+00  1.7970e+05]
+longitude             0
+latitude              0
+housing_median_age    0
+total_rooms           0
+total_bedrooms        0
+population            0
+households            0
+median_income         0
+median_house_value    0
+dtype: int64
+   longitude  latitude  housing_median_age  ...  households  median_income  median_house_value
+0    -122.23     37.88                41.0  ...       126.0         8.3252            452600.0
+1    -122.22     37.86                21.0  ...      1138.0         8.3014            358500.0
+2    -122.24     37.85                52.0  ...       177.0         7.2574            352100.0
+3    -122.25     37.85                52.0  ...       219.0         5.6431            341300.0
+4    -122.25     37.85                52.0  ...       259.0         3.8462            342200.0
+```
+>数据清洗理解：
+用 sklearn 的 Transformer（SimpleImputer）替代手动数据清洗，实现可复用的数据预处理管道。<br/>
+❗ 训练集 fit，测试集 transform（不能重新 fit），否则会 数据泄露（data leakage）<br/>
+使用 SimpleImputer(strategy="median") 后，模型成功学习各数值特征的中位数，并将 total_bedrooms 的 207 个缺失值全部用中位数填充，实现了完整的数据清洗。<br/>
+
+📌 缺失值处理三种方式
+* 删除样本（数据少时不推荐）
+* 删除特征（信息损失大）
+* 填充（均值 / 中位数 / 模型预测）⭐推荐<br/>
+
+🚀 SimpleImputer 核心点
+* fit()：计算每列统计量（如中位数）
+* transform()：用统计量填充缺失值
+* strategy="median"：抗异常值更强（比 mean 更稳）
+
+---
+
+# 文本预处理
+运行text_processing.py返回的结果：
+```
+  ocean_proximity
+0        NEAR BAY
+1        NEAR BAY
+2        NEAR BAY
+3        NEAR BAY
+4        NEAR BAY
+5        NEAR BAY
+6        NEAR BAY
+7        NEAR BAY
+8        NEAR BAY
+9        NEAR BAY
+One-hot编码结果（稀疏矩阵）：
+<Compressed Sparse Row sparse matrix of dtype 'float64'
+        with 10 stored elements and shape (10, 5)>
+  Coords        Values
+  (0, 3)        1.0
+  (1, 3)        1.0
+  (2, 3)        1.0
+  (3, 3)        1.0
+  (4, 3)        1.0
+  (5, 3)        1.0
+  (6, 3)        1.0
+  (7, 3)        1.0
+  (8, 3)        1.0
+  (9, 3)        1.0
+类别列表：
+[array(['<1H OCEAN', 'INLAND', 'ISLAND', 'NEAR BAY', 'NEAR OCEAN'],
+      dtype=object)]
+```
+> 文本预处理理解：采用one-hot编码，将类别特征转换为数值特征。<br/>
+OneHotEncoder 将类别变量展开为独立维度的二进制特征，并用稀疏矩阵高效存储，从而避免了 Ordinal 编码引入的虚假顺序问题。
+
+👉 特点：
+* 无偏序关系
+* 更符合真实语义
+* 适用于线性模型 & 神经网络
+
+📌 稀疏矩阵（Sparse Matrix）解释
+`housing_cat_1hot 是 scipy sparse matrix`
+
+👉 为什么不是普通数组？<br/>
+因为：
+* 绝大多数是 0
+* 如果用 numpy 存 → 浪费内存
+
+✔ 所以 sklearn 自动优化成：
+* 稀疏矩阵（只存非零位置）
