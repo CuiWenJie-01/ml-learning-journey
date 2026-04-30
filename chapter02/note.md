@@ -641,3 +641,90 @@ Standard deviation: 812.5010529484904
 
 仍然有轻微过拟合
 ```
+
+---
+
+# 模型调参
+## Grid Search（网格搜索/超参数搜索）
+运行grid_search.py的结果：
+```
+Best Parameters: {'max_features': 4, 'n_estimators': 30}
+Train RMSE (Best Model): 19522.25609011151
+```
+
+### 第一部分：Best Parameters 在说什么？
+```
+🌳 解释：
+✔ n_estimators = 30
+
+👉 森林里有 30 棵树
+
+比 3 / 10 更稳定
+信息更充分
+结果更可靠
+✔ max_features = 4
+
+👉 每次分裂节点时，只看 4 个特征
+
+保持“随机性”
+防止所有树学得太像
+提升泛化能力
+🧠 一句话总结：
+
+👉 最优模型 = 30棵树 + 中等随机性（4个特征）
+
+
+```
+
+### 第二部分：Train RMSE (Best Model) 在说什么？
+```
+19522（训练误差）
+❗ 这个数字说明什么？
+
+👉 模型在训练集上的平均误差：
+
+大约 1.95 万美元
+```
+🧠 对比一下你之前的模型：
+| 模型                | Train RMSE |
+| ----------------- | ---------- |
+| Linear Regression | ~68000     |
+| Decision Tree     | 0          |
+| Random Forest     | ~19500     |
+🔥 结论：
+✔ 比线性回归强很多
+✔ 比决策树更合理（没有“记忆数据”）
+
+---
+# Analyze the Best Models and Their Errors(分析最佳模型及其误差)
+运行grid_search.py的结果：
+```
+Feature Importances (sorted):
+median_income: 0.2822
+ocean_proximity_INLAND: 0.1387
+bedrooms_per_room: 0.1007
+population_per_household: 0.0983
+longitude: 0.0807
+latitude: 0.0737
+rooms_per_household: 0.0671
+housing_median_age: 0.0412
+population: 0.0226
+total_rooms: 0.0212
+total_bedrooms: 0.0210
+households: 0.0200
+ocean_proximity_<1H OCEAN: 0.0124
+ocean_proximity_NEAR OCEAN: 0.0106
+ocean_proximity_NEAR BAY: 0.0093
+ocean_proximity_ISLAND: 0.0002
+```
+>通过检视模型我们往往可以得到一些不错的视角。比如feature_importances可以表示每个属性对于准确预测的相对重要性。通过这些信息，可能会有利于我们尝试删除一些不太有用的特性。
+
+---
+
+# Evaluate Your System on the Test Set(在测试集上评估您的系统)
+运行grid_search.py的结果：
+```
+Test RMSE (Best Model): 50606.98833568678
+```
+>模型在测试集上的 RMSE 约为 5 万美元，说明模型对房价预测具有一定泛化能力，但仍存在较大误差，后续可以通过特征工程和更强模型（如集成学习或 XGBoost）进一步优化。<br/>
+“已经学到了房价规律，但预测误差仍然较明显（约 5 万美元级别），属于可用但未优化完成的状态。”

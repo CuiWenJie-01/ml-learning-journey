@@ -187,7 +187,7 @@ grid_search.fit(housing_prepared, housing_labels)
 # =========================================================
 # 12. 最优参数
 # =========================================================
-print("Best Parameters:", grid_search.best_params_)
+#print("Best Parameters:", grid_search.best_params_)
 
 
 # =========================================================
@@ -204,4 +204,79 @@ final_predictions = best_model.predict(housing_prepared)
 final_mse = mean_squared_error(housing_labels, final_predictions)
 final_rmse = np.sqrt(final_mse)
 
-print("Train RMSE (Best Model):", final_rmse)
+#print("Train RMSE (Best Model):", final_rmse)
+
+
+
+# 特征重要性
+feature_importances = grid_search.best_estimator_.feature_importances_
+
+# =========================
+# 数值特征名
+# =========================
+num_attribs = list(housing.drop("ocean_proximity", axis=1).columns)
+
+# =========================
+# 你自己加的组合特征
+# =========================
+extra_attribs = [
+    "rooms_per_household",
+    "population_per_household",
+    "bedrooms_per_room"
+]
+
+# =========================
+# One-Hot 编码后的分类特征
+# =========================
+cat_encoder = full_pipeline.named_transformers_["cat"]
+cat_one_hot_attribs = list(
+    cat_encoder.get_feature_names_out(["ocean_proximity"])
+)
+
+# =========================
+# 所有特征拼接
+# =========================
+attributes = num_attribs + extra_attribs + cat_one_hot_attribs
+
+# =========================
+# 排序输出（从重要到不重要）
+# =========================
+sorted_features = sorted(
+    zip(feature_importances, attributes),
+    reverse=True
+)
+
+# print("Feature Importances (sorted):")
+# for score, name in sorted_features:
+#     print(f"{name}: {score:.4f}")
+
+# 从 GridSearchCV 中获取最优模型（在验证集上表现最好的模型）
+final_model = grid_search.best_estimator_
+
+# 从测试集提取特征数据（X）
+# axis=1 表示按列删除 target 变量
+X_test = test_set.drop("median_house_value", axis=1)
+
+# 从测试集提取真实标签（y）
+# copy() 防止后续修改影响原始数据
+y_test = test_set["median_house_value"].copy()
+
+# 对测试集特征进行预处理（与训练时完全一致）
+# ⚠️ 注意：这里只是 transform，不能 fit
+# 因为所有统计量（均值、方差等）必须来自训练集，避免数据泄漏
+X_test_prepared = full_pipeline.transform(X_test)
+
+# 使用最优模型对测试集进行预测
+# 这里输入的是已经预处理后的特征
+final_predictions = final_model.predict(X_test_prepared)
+
+# 计算均方误差（MSE）
+# 衡量预测值与真实值之间的平均平方差
+final_mse = mean_squared_error(y_test, final_predictions)
+
+# 将 MSE 转换为 RMSE（均方根误差）
+# RMSE 更直观，因为与原始标签单位一致
+final_rmse = np.sqrt(final_mse)
+
+# 输出最终模型在测试集上的表现
+print("Test RMSE (Best Model):", final_rmse)
