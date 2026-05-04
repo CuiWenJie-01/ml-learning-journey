@@ -6,6 +6,7 @@ This repository documents my journey of learning Machine Learning step by step u
 
 * chapter01: ML basics and first model
 * chapter02: End-to-end ML project
+* chapter03: Classification
 * ...
 
 ## Goal
