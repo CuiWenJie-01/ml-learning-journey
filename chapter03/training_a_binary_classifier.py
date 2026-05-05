@@ -78,5 +78,73 @@ precision=precision_score(y_train_5, y_train_pred)
 # 召回率
 recall=recall_score(y_train_5, y_train_pred)
 
-print("Precision:", precision)
-print("Recall:", recall)
+# print("Precision:", precision)
+# print("Recall:", recall)
+
+# F1 Score
+from sklearn.metrics import f1_score
+f1=f1_score(y_train_5, y_train_pred)
+# print("F1:", f1)
+
+# ROC Curve
+from sklearn.metrics import roc_curve
+y_scores=sgd_clf.decision_function(X_train)
+fpr, tpr, thresholds=roc_curve(y_train_5, y_scores)
+# plt.plot(fpr, tpr, linewidth=2,label="ROC curve")
+# plt.plot([0,1], [0,1], 'k--', label="Random classifier's ROC curve")
+# plt.xlabel("False Positive Rate")
+# plt.ylabel("True Positive Rate (Recall)")
+# plt.legend()
+# plt.show()
+
+# AUC Score（ROC 曲线面积）
+from sklearn.metrics import roc_auc_score
+roc_auc=roc_auc_score(y_train_5, y_scores)
+# print("AUC:", roc_auc)
+
+# Multiclass Classification（多类别分类）
+# One-vs-Rest（OvR，一对多）
+# from sklearn.linear_model import SGDClassifier
+
+# sgd_clf = SGDClassifier(random_state=42)
+# sgd_clf.fit(X_train, y_train)
+# prediction = sgd_clf.predict([X_train[0]])
+# print("Predicted class for first training sample:", prediction)
+# print("Actual class for first training sample:", y_train[0])
+
+# One-vs-One（OvO，一对一）
+# from sklearn.multiclass import OneVsOneClassifier
+# ovo_clf = OneVsOneClassifier(SGDClassifier(random_state=42))
+# ovo_clf.fit(X_train, y_train)
+# prediction = ovo_clf.predict([X_train[0]])
+# print("Predicted class for first training sample:", prediction)
+# print("Actual class for first training sample:", y_train[0])
+
+
+# Error Analysis（误差分析）
+## 1. 混淆矩阵
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import cross_val_predict
+
+y_train_pred = cross_val_predict(sgd_clf, X_train, y_train, cv=3)
+
+conf_mx = confusion_matrix(y_train, y_train_pred)
+# print(conf_mx)
+
+# 可视化混淆矩阵
+import matplotlib.pyplot as plt
+
+# plt.matshow(conf_mx, cmap=plt.cm.gray)
+# plt.show()
+
+# 标准化混淆矩阵
+import numpy as np
+
+row_sums = conf_mx.sum(axis=1, keepdims=True)
+norm_conf_mx = conf_mx / row_sums
+
+# 去掉对角线（只看错误）
+np.fill_diagonal(norm_conf_mx, 0)
+
+plt.matshow(norm_conf_mx, cmap=plt.cm.gray)
+plt.show()
