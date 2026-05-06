@@ -8,6 +8,7 @@ This repository documents my journey of learning Machine Learning step by step u
 * chapter02: End-to-end ML project
 * chapter03: Classification
 * chapter04: Training Models
+* chapter06: Ensemble Learning and Random Forests
 * ...
 
 ## Goal
